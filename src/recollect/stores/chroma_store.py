@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 import numpy as np
 
@@ -39,6 +39,10 @@ class ChromaMemoryStore:
 
     def delete(self, memory_id: str) -> bool:
         try:
+            # Pre-check existence for accurate return value
+            existing = self._collection.get(ids=[memory_id], include=[])
+            if not existing.get("ids"):
+                return False
             self._collection.delete(ids=[memory_id])
             return True
         except Exception:
@@ -55,7 +59,9 @@ class ChromaMemoryStore:
         result = self._collection.get(where=where, include=["documents", "metadatas"])
         return [
             self._row_to_record(rid, doc, meta)
-            for rid, doc, meta in zip(result["ids"], result["documents"], result["metadatas"])
+            for rid, doc, meta in zip(
+                result["ids"], result["documents"], result["metadatas"], strict=True
+            )
         ]
 
     def iter_with_embeddings(
@@ -64,7 +70,11 @@ class ChromaMemoryStore:
         where = self._where(filters)
         result = self._collection.get(where=where, include=["documents", "metadatas", "embeddings"])
         for rid, doc, meta, emb in zip(
-            result["ids"], result["documents"], result["metadatas"], result["embeddings"]
+            result["ids"],
+            result["documents"],
+            result["metadatas"],
+            result["embeddings"],
+            strict=True,
         ):
             yield self._row_to_record(rid, doc, meta), np.array(emb, dtype=np.float32)
 

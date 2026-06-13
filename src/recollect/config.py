@@ -23,7 +23,7 @@ class EmbedderConfig(BaseModel):
 
 
 class VectorStoreConfig(BaseModel):
-    provider: Literal["sqlite", "qdrant", "chroma", "pgvector"] = "sqlite"
+    provider: Literal["sqlite", "memory", "qdrant", "chroma", "pgvector"] = "sqlite"
     sqlite_path: Path | None = None
     chroma_path: str | None = None
     collection_name: str = "recollect"
@@ -44,10 +44,19 @@ class RecollectConfig(BaseModel):
     default_top_k: int = 5
 
     @classmethod
-    def local_dev(cls) -> "RecollectConfig":
+    def local_dev(cls) -> RecollectConfig:
         """No API keys: local embedder, SQLite, raw message ingest."""
         return cls(
             extraction_enabled=False,
             embedder=EmbedderConfig(provider="local", dimensions=64),
             vector_store=VectorStoreConfig(provider="sqlite", embedding_dims=64),
+        )
+
+    @classmethod
+    def in_memory(cls) -> RecollectConfig:
+        """Fast, ephemeral in-memory store + local embedder. Ideal for unit tests and benchmarks."""
+        return cls(
+            extraction_enabled=False,
+            embedder=EmbedderConfig(provider="local", dimensions=64),
+            vector_store=VectorStoreConfig(provider="memory", embedding_dims=64),
         )

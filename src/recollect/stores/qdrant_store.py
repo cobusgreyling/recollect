@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 import numpy as np
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, FieldCondition, Filter, MatchValue, PointStruct, VectorParams
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 from recollect.config import VectorStoreConfig
 from recollect.types import MemoryRecord, MemoryScope
@@ -42,11 +49,18 @@ class QdrantMemoryStore:
         )
 
     def delete(self, memory_id: str) -> bool:
-        self._client.delete(
-            collection_name=self._collection,
-            points_selector=[memory_id],
-        )
-        return True
+        try:
+            # Check existence first for accurate return (Qdrant delete is idempotent)
+            points = self._client.retrieve(collection_name=self._collection, ids=[memory_id])
+            if not points:
+                return False
+            self._client.delete(
+                collection_name=self._collection,
+                points_selector=[memory_id],
+            )
+            return True
+        except Exception:
+            return False
 
     def get(self, memory_id: str) -> MemoryRecord | None:
         points = self._client.retrieve(collection_name=self._collection, ids=[memory_id])

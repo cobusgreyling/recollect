@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
@@ -38,9 +38,7 @@ class SQLiteMemoryStore:
             )
             """
         )
-        self._conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_memories_user ON memories(user_id)"
-        )
+        self._conn.execute("CREATE INDEX IF NOT EXISTS idx_memories_user ON memories(user_id)")
         self._conn.commit()
 
     def insert(self, record: MemoryRecord, embedding: np.ndarray) -> None:
@@ -73,9 +71,7 @@ class SQLiteMemoryStore:
         return cur.rowcount > 0
 
     def get(self, memory_id: str) -> MemoryRecord | None:
-        row = self._conn.execute(
-            "SELECT * FROM memories WHERE id = ?", (memory_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM memories WHERE id = ?", (memory_id,)).fetchone()
         if not row:
             return None
         return self._row_to_record(row)

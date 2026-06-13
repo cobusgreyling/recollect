@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from recollect.config import RecollectConfig
@@ -10,9 +11,13 @@ from recollect.stores.base import MemoryStore
 from recollect.stores.factory import create_store
 from recollect.types import MemoryRecord, MemoryScope, SearchHit
 
+logger = logging.getLogger(__name__)
+
 
 class MemoryCore:
-    def __init__(self, config: RecollectConfig | None = None, store: MemoryStore | None = None) -> None:
+    def __init__(
+        self, config: RecollectConfig | None = None, store: MemoryStore | None = None
+    ) -> None:
         self.config = config or RecollectConfig()
         self._store = store or create_store(self.config)
         self._embedder = Embedder(self.config.embedder)
@@ -70,6 +75,7 @@ class MemoryCore:
             embedding = self._embedder.embed(fact)
             self._store.insert(record, embedding)
             created.append({"id": record.id, "memory": record.text})
+        logger.debug("Added %d fact(s) (infer=%s, scoped)", len(created), infer)
         return {"results": created}
 
     def search(
@@ -88,6 +94,9 @@ class MemoryCore:
             candidates=candidates,
             config=self.config,
             top_k=k,
+        )
+        logger.debug(
+            "Search returned %d hit(s) from %d candidates (top_k=%d)", len(hits), len(candidates), k
         )
         return {"results": [hit.model_dump() for hit in hits]}
 

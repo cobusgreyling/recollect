@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 import numpy as np
 
@@ -140,7 +140,9 @@ class PgVectorMemoryStore:
             ),
             entities=entities if isinstance(entities, list) else json.loads(entities or "[]"),
             source=source,
-            created_at=created_at if isinstance(created_at, datetime) else datetime.fromisoformat(str(created_at)),
+            created_at=created_at
+            if isinstance(created_at, datetime)
+            else datetime.fromisoformat(str(created_at)),
         )
 
     def close(self) -> None:

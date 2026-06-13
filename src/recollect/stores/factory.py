@@ -4,11 +4,14 @@ from pathlib import Path
 
 from recollect.config import RecollectConfig
 from recollect.stores.base import MemoryStore
+from recollect.stores.in_memory_store import InMemoryStore
 from recollect.stores.sqlite_store import SQLiteMemoryStore
 
 
 def create_store(config: RecollectConfig) -> MemoryStore:
     vs = config.vector_store
+    if vs.provider in ("memory", "inmemory"):
+        return InMemoryStore()
     if vs.provider == "sqlite":
         db_path = vs.sqlite_path or (config.data_dir / "memories.db")
         return SQLiteMemoryStore(Path(db_path))

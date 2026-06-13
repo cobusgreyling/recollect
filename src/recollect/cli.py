@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 
+from recollect import __version__
 from recollect.config import RecollectConfig
 from recollect.memory import Memory
 
@@ -33,7 +34,13 @@ def cmd_demo(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="recollect", description="Recollect memory CLI")
-    sub = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show version and exit",
+    )
+    sub = parser.add_subparsers(dest="command", required=False)
 
     demo = sub.add_parser("demo", help="Seed sample memories and run a search")
     demo.add_argument("--user-id", default="demo_user")
