@@ -19,11 +19,11 @@
   <body>
     <header class="site-header">
       <nav class="nav">
-        <a class="logo" href="#">Recollect</a>
+        <a class="logo" href="index.html">Recollect</a>
         <div class="nav-links">
           <a href="#how-it-works">How it works</a>
           <a href="#features">Features</a>
-          <a href="#showcase">Showcase</a>
+          <a href="showcase.html">Showcase</a>
           <a href="https://github.com/cobusgreyling/recollect" target="_blank" rel="noreferrer"
             >GitHub</a
           >
@@ -48,6 +48,7 @@
             <a class="btn btn-primary" href="https://github.com/cobusgreyling/recollect"
               >View source</a
             >
+            <a class="btn btn-ghost" href="showcase.html">Showcase</a>
             <a class="btn btn-ghost" href="#quickstart">Quickstart</a>
           </div>
         </div>
@@ -119,54 +120,15 @@
         </div>
       </section>
 
-      <section class="section showcase" id="showcase">
-        <div class="container">
-          <h2>Showcase</h2>
-          <p class="section-lead">
-            Three patterns teams reach for first: personalized support, long-running assistants, and
-            multi-agent workflows.
+      <section class="section intro-teaser">
+        <div class="container narrow cta-box">
+          <h2>See it in action</h2>
+          <p>
+            Support bots, persistent assistants, and multi-agent scoping—with copy-paste examples on
+            the showcase page.
           </p>
-          <div class="showcase-grid">
-            <article class="showcase-card">
-              <div class="showcase-tag">Support</div>
-              <h3>Tailored replies</h3>
-              <p>
-                Before each turn, search memories for the customer’s plan tier, past issues, and tone
-                preferences—inject the top facts into the system prompt.
-              </p>
-              <pre><code>hits = memory.search(
-    message,
-    filters={"user_id": customer_id},
-    top_k=5,
-)</code></pre>
-            </article>
-            <article class="showcase-card">
-              <div class="showcase-tag">Assistant</div>
-              <h3>Continuity across sessions</h3>
-              <p>
-                After responding, append the exchange with <code>memory.add</code> so the next login
-                still knows location, stack choices, and standing instructions.
-              </p>
-              <pre><code>memory.add(
-    [{"role": "user", "content": msg},
-     {"role": "assistant", "content": reply}],
-    user_id=user_id,
-)</code></pre>
-            </article>
-            <article class="showcase-card">
-              <div class="showcase-tag">Agents</div>
-              <h3>Per-run isolation</h3>
-              <p>
-                Scope episodic tool outcomes with <code>run_id</code> while keeping stable user
-                preferences under <code>user_id</code> for cross-run recall.
-              </p>
-              <pre><code>memory.add(
-    tool_summary,
-    user_id="team",
-    run_id=run_id,
-    infer=False,
-)</code></pre>
-            </article>
+          <div class="hero-actions hero-actions--dark">
+            <a class="btn btn-primary" href="showcase.html">Open showcase</a>
           </div>
         </div>
       </section>

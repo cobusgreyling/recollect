@@ -348,6 +348,81 @@ code {
   color: var(--ink);
 }
 
+.page-hero {
+  position: relative;
+  min-height: clamp(280px, 42vh, 480px);
+  display: grid;
+}
+
+.page-hero-image {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: grayscale(1) contrast(1.05);
+}
+
+.page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(2rem, 5vw, 3.5rem) min(4vw, 2rem);
+  background: var(--hero-fade);
+  color: #f8f6f2;
+}
+
+.page-hero-overlay h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+}
+
+.cta-box {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--paper-deep);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.cta-box h2 {
+  margin-top: 0;
+}
+
+.cta-box p {
+  margin: 0 0 1.25rem;
+  color: var(--ink-soft);
+}
+
+.hero-actions--dark .btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.hero-actions--dark .btn-ghost {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+}
+
+.code-block--wide {
+  max-width: 100%;
+}
+
+.showcase-deep h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 0 0 0.5rem;
+}
+
+.footer-inner a + a {
+  margin-left: 1rem;
+}
+
 @media (max-width: 640px) {
   .nav {
     position: relative;

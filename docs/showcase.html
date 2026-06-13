@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase — Recollect</title>
+    <meta
+      name="description"
+      content="Example patterns for using Recollect: support bots, persistent assistants, and multi-agent memory scoping."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header site-header--compact">
+      <nav class="nav">
+        <a class="logo" href="index.html">Recollect</a>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="index.html#how-it-works">How it works</a>
+          <a href="index.html#features">Features</a>
+          <a href="showcase.html" aria-current="page">Showcase</a>
+          <a href="https://github.com/cobusgreyling/recollect" target="_blank" rel="noreferrer"
+            >GitHub</a
+          >
+        </div>
+      </nav>
+      <div class="page-hero">
+        <img
+          class="page-hero-image"
+          src="assets/header.jpg"
+          alt=""
+          width="1920"
+          height="1080"
+        />
+        <div class="page-hero-overlay">
+          <p class="eyebrow">Examples</p>
+          <h1>Showcase</h1>
+          <p class="hero-lead">
+            Patterns for personalized support, session continuity, and scoped agent runs—with code
+            you can paste into your stack.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section showcase">
+        <div class="container">
+          <p class="section-lead">
+            Three patterns teams reach for first. Each uses the same five-method API:
+            <code>add</code>, <code>search</code>, <code>get</code>, <code>get_all</code>,
+            <code>delete</code>.
+          </p>
+          <div class="showcase-grid">
+            <article class="showcase-card">
+              <div class="showcase-tag">Support</div>
+              <h3>Tailored replies</h3>
+              <p>
+                Before each turn, search memories for the customer’s plan tier, past issues, and tone
+                preferences—inject the top facts into the system prompt.
+              </p>
+              <pre><code>hits = memory.search(
+    message,
+    filters={"user_id": customer_id},
+    top_k=5,
+)
+context = "\n".join(h["memory"] for h in hits["results"])</code></pre>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-tag">Assistant</div>
+              <h3>Continuity across sessions</h3>
+              <p>
+                After responding, append the exchange with <code>memory.add</code> so the next login
+                still knows location, stack choices, and standing instructions.
+              </p>
+              <pre><code>memory.add(
+    [{"role": "user", "content": msg},
+     {"role": "assistant", "content": reply}],
+    user_id=user_id,
+)</code></pre>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-tag">Agents</div>
+              <h3>Per-run isolation</h3>
+              <p>
+                Scope episodic tool outcomes with <code>run_id</code> while keeping stable user
+                preferences under <code>user_id</code> for cross-run recall.
+              </p>
+              <pre><code>memory.add(
+    tool_summary,
+    user_id="team",
+    run_id=run_id,
+    infer=False,
+)</code></pre>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section showcase-deep">
+        <div class="container">
+          <h2>End-to-end chat loop</h2>
+          <p class="section-lead">
+            The same flow as <code>examples/chat_with_memory.py</code>: retrieve, answer, then write
+            back new facts.
+          </p>
+          <pre class="code-block code-block--wide"><code>from openai import OpenAI
+from recollect import Memory
+
+memory = Memory()
+client = OpenAI()
+user_id = "demo_user"
+
+def reply(message: str) -> str:
+    retrieved = memory.search(message, filters={"user_id": user_id}, top_k=5)
+    memories = "\n".join(f"- {r['memory']}" for r in retrieved["results"])
+    system = f"You are helpful. User memories:\n{memories or '- (none)'}"
+    answer = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": message},
+        ],
+    ).choices[0].message.content
+    memory.add(
+        [{"role": "user", "content": message},
+         {"role": "assistant", "content": answer}],
+        user_id=user_id,
+    )
+    return answer</code></pre>
+        </div>
+      </section>
+
+      <section class="section showcase-cta">
+        <div class="container narrow cta-box">
+          <h2>Try it locally</h2>
+          <p>No API key required for search/add smoke tests—use the local embedder and <code>infer=False</code>.</p>
+          <div class="hero-actions hero-actions--dark">
+            <a class="btn btn-primary" href="index.html#quickstart">Quickstart</a>
+            <a class="btn btn-ghost" href="https://github.com/cobusgreyling/recollect">GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <p>Recollect · Apache 2.0</p>
+        <a href="index.html">Home</a>
+        <a href="https://github.com/cobusgreyling/recollect">github.com/cobusgreyling/recollect</a>
+      </div>
+    </footer>
+  </body>
+</html>

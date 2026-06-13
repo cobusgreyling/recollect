@@ -2,7 +2,7 @@
 
 ![Recollect header — memory, books, and time](docs/assets/header.jpg)
 
-**[Showcase page](docs/index.html)** · Long-term memory layer for AI agents and assistants. Recollect turns conversations into durable facts, scopes them per user/agent/session, and retrieves the right context with semantic + keyword + entity signals.
+**[Home](docs/index.html)** · **[Showcase](docs/showcase.html)** · Long-term memory layer for AI agents and assistants. Recollect turns conversations into durable facts, scopes them per user/agent/session, and retrieves the right context with semantic + keyword + entity signals.
 
 ## Why
 
@@ -18,11 +18,11 @@ Stateful agents need memory that survives a single context window: preferences, 
 
 ## Showcase site
 
-Open [`docs/index.html`](docs/index.html) in a browser, or serve locally:
+Open [`docs/index.html`](docs/index.html) or [`docs/showcase.html`](docs/showcase.html), or serve locally:
 
 ```bash
 cd docs && python -m http.server 8080
-# http://localhost:8080
+# http://localhost:8080 — showcase at /showcase.html
 ```
 
 ## Install
