@@ -4,20 +4,53 @@ build-backend = "hatchling.build"
 
 [project]
 name = "recollect"
-version = "0.1.0"
+version = "0.2.0"
 description = "Long-term memory layer for AI agents and assistants"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [{ name = "Cobus Greyling" }]
+keywords = ["ai", "agents", "memory", "langchain", "llamaindex", "llm", "rag"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "pydantic>=2.7",
-    "openai>=1.40",
     "numpy>=1.26",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+openai = ["openai>=1.40"]
+langchain = ["langchain-core>=0.3.0"]
+llamaindex = ["llama-index-core>=0.11.0"]
+qdrant = ["qdrant-client>=1.12.0"]
+chroma = ["chromadb>=0.5.0"]
+pgvector = ["psycopg[binary]>=3.2", "pgvector>=0.3.0"]
+huggingface = ["sentence-transformers>=3.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "openai>=1.40",
+    "langchain-core>=0.3.0",
+    "llama-index-core>=0.11.0",
+]
+all = [
+    "recollect[openai,langchain,llamaindex,qdrant,chroma,pgvector,huggingface]",
+]
+
+[project.scripts]
+recollect = "recollect.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/cobusgreyling/recollect"
+Documentation = "https://github.com/cobusgreyling/recollect/tree/main/docs"
+Repository = "https://github.com/cobusgreyling/recollect"
+Issues = "https://github.com/cobusgreyling/recollect/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["recollect"]
@@ -28,3 +61,6 @@ packages = ["recollect"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "integration: tests requiring optional framework dependencies",
+]

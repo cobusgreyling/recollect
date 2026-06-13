@@ -4,8 +4,6 @@ import json
 import re
 from typing import Any
 
-from openai import OpenAI
-
 from recollect.config import LLMConfig
 
 EXTRACTION_SYSTEM = """You extract durable facts from conversations for long-term agent memory.
@@ -23,6 +21,8 @@ ENTITY_PATTERN = re.compile(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b")
 
 class FactExtractor:
     def __init__(self, config: LLMConfig) -> None:
+        from openai import OpenAI
+
         self.config = config
         self._client = OpenAI(api_key=config.api_key, base_url=config.base_url)
 
@@ -36,10 +36,7 @@ class FactExtractor:
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": EXTRACTION_SYSTEM},
-                {
-                    "role": "user",
-                    "content": f"Conversation JSON:\n{payload}",
-                },
+                {"role": "user", "content": f"Conversation JSON:\n{payload}"},
             ],
         )
         content = response.choices[0].message.content or "{}"
@@ -50,7 +47,6 @@ class FactExtractor:
 
 def extract_entities_heuristic(text: str) -> list[str]:
     found = ENTITY_PATTERN.findall(text)
-    # de-dupe preserving order
     seen: set[str] = set()
     out: list[str] = []
     for item in found:

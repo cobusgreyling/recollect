@@ -2,17 +2,14 @@ from pathlib import Path
 
 import pytest
 
-from recollect.config import EmbedderConfig, RecollectConfig
+from recollect.config import RecollectConfig
 from recollect.memory import Memory
 
 
 @pytest.fixture
 def memory(tmp_path: Path) -> Memory:
-    config = RecollectConfig(
-        data_dir=tmp_path / "data",
-        extraction_enabled=False,
-        embedder=EmbedderConfig(provider="local", dimensions=64),
-    )
+    config = RecollectConfig.local_dev()
+    config = config.model_copy(update={"data_dir": tmp_path / "data"})
     mem = Memory(config)
     yield mem
     mem.close()

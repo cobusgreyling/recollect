@@ -2,99 +2,117 @@
 
 ![Recollect header — memory, books, and time](docs/assets/header.jpg)
 
-**[Home](docs/index.html)** · **[Showcase](docs/showcase.html)** · Long-term memory layer for AI agents and assistants. Recollect turns conversations into durable facts, scopes them per user/agent/session, and retrieves the right context with semantic + keyword + entity signals.
+**[Home](docs/index.html)** · **[Showcase](docs/showcase.html)** · **[LangChain](docs/integrations/langchain.md)** · **[LlamaIndex](docs/integrations/llama-index.md)**
 
-## Why
+Long-term **memory layer** for AI agents and assistants—self-hosted, library-first, and integration-ready for **LangChain** and **LlamaIndex** OSS workflows.
 
-Stateful agents need memory that survives a single context window: preferences, constraints, past outcomes, and confirmed actions. Recollect gives you a small, embeddable library for that workflow without tying you to a hosted platform.
+## Why Recollect
 
-## Features
-
-- **ADD-only extraction** — accumulate atomic facts from chat (optional LLM extraction)
-- **Scoped memory** — `user_id`, `agent_id`, `run_id` filters
-- **Hybrid retrieval** — embedding similarity, BM25-style keyword scoring, entity overlap boost
-- **Local-first storage** — SQLite under `~/.recollect` (configurable)
-- **Pluggable embedders** — OpenAI embeddings or deterministic local vectors for dev/tests
-
-## Showcase site
-
-Open [`docs/index.html`](docs/index.html) or [`docs/showcase.html`](docs/showcase.html), or serve locally:
-
-```bash
-cd docs && python -m http.server 8080
-# http://localhost:8080 — showcase at /showcase.html
-```
+- **ADD-only facts** from conversations (optional LLM extraction)
+- **Scoped memory** — `user_id`, `agent_id`, `run_id`
+- **Hybrid retrieval** — semantic + keyword + entity boost
+- **Pluggable stores** — SQLite (default), Qdrant, Chroma, pgvector
+- **No platform required** — embed in your app; open Apache 2.0
 
 ## Install
 
 ```bash
+git clone https://github.com/cobusgreyling/recollect.git
 cd recollect
-python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
+pip install -e packages/llama-index-memory-recollect   # LlamaIndex adapter
 ```
 
-## Quickstart
+PyPI (once published):
+
+```bash
+pip install recollect
+pip install llama-index-memory-recollect
+```
+
+### Extras
+
+| Extra | Purpose |
+|-------|---------|
+| `openai` | OpenAI LLM + embeddings |
+| `langchain` | Tools + Runnable helpers |
+| `llamaindex` | Core types for LlamaIndex apps |
+| `qdrant` / `chroma` / `pgvector` | Vector backends |
+| `huggingface` | HF sentence-transformers embedder |
+| `all` | Everything |
+
+## 5-minute local demo (no API keys)
+
+```bash
+pip install -e .
+recollect demo
+```
 
 ```python
 from recollect import Memory, RecollectConfig
-from recollect.config import EmbedderConfig
 
-memory = Memory(
-    RecollectConfig(
-        extraction_enabled=False,
-        embedder=EmbedderConfig(provider="local"),
-    )
-)
-
+memory = Memory(RecollectConfig.local_dev())
 memory.add("Prefers PostgreSQL over MySQL", user_id="alice", infer=False)
-results = memory.search("database preference", filters={"user_id": "alice"})
-print(results["results"][0]["memory"])
+print(memory.search("database", filters={"user_id": "alice"}))
 ```
 
-With OpenAI extraction and embeddings, set `OPENAI_API_KEY` and use default config:
+## LangChain
 
 ```python
-from recollect import Memory
+from recollect import Memory, RecollectConfig
+from recollect.integrations.langchain import create_recollect_tools, memory_runnable
 
-memory = Memory()
-memory.add(
-    [
-        {"role": "user", "content": "I moved to Berlin last month."},
-        {"role": "assistant", "content": "Noted — I'll remember you're in Berlin."},
-    ],
-    user_id="alice",
-)
+memory = Memory(RecollectConfig.local_dev())
+tools = create_recollect_tools(memory, user_id="alice")
+ctx = memory_runnable(memory, user_id="alice").invoke({"input": "database prefs"})
 ```
 
-See `examples/chat_with_memory.py` for a full REPL-style integration.
+Examples: [`examples/langchain_travel_agent.py`](examples/langchain_travel_agent.py), [`examples/langgraph_memory_node.py`](examples/langgraph_memory_node.py)
+
+## LlamaIndex
+
+```python
+from llama_index.memory.recollect import RecollectMemory
+from recollect.config import RecollectConfig
+
+memory = RecollectMemory.from_config(
+    context={"user_id": "alice"},
+    config=RecollectConfig.local_dev(),
+)
+# SimpleChatEngine.from_defaults(llm=llm, memory=memory)
+```
+
+Package: [`packages/llama-index-memory-recollect`](packages/llama-index-memory-recollect)
 
 ## API
 
 | Method | Purpose |
 |--------|---------|
-| `add(messages, user_id=..., infer=True)` | Extract and store memories |
+| `add(...)` | Extract/store memories |
 | `search(query, filters={}, top_k=5)` | Hybrid retrieval |
-| `get(memory_id)` | Fetch one record |
-| `get_all(filters={})` | List scoped memories |
-| `delete(memory_id)` | Remove a memory |
+| `get` / `get_all` / `delete` | CRUD |
 
-## Roadmap
-
-- [ ] Async API and batch embedding
-- [ ] Vector store backends (Qdrant, pgvector)
-- [ ] Temporal ranking for time-sensitive facts
-- [ ] HTTP server and dashboard
-- [ ] TypeScript SDK
+`AsyncMemory` provides the same API with `async`/`await`.
 
 ## Development
 
 ```bash
-pytest
+make install
+make test
+make demo
 ```
+
+## Roadmap
+
+- [x] LangChain tools + Runnable
+- [x] LlamaIndex `RecollectMemory`
+- [x] Async API, multi-backend stores
+- [ ] LlamaHub listing + upstream LlamaIndex notebook PR
+- [ ] LangGraph cookbook in docs site
 
 ## Acknowledgments
 
-Design ideas draw on public research and open work in agent memory systems, including additive fact extraction and multi-signal retrieval patterns popularized by projects such as [Mem0](https://github.com/mem0ai/mem0) and their [research paper](https://arxiv.org/abs/2504.19413). Recollect is an independent implementation and codebase.
+Patterns draw on public agent-memory research and OSS work, including additive extraction and multi-signal retrieval popularized by [Mem0](https://github.com/mem0ai/mem0). Recollect is an independent codebase.
 
 ## License
 
