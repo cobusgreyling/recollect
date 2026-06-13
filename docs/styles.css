@@ -444,3 +444,356 @@ code {
     min-height: 0;
   }
 }
+
+/* ============================================
+   Interactive Playground — GitHub Showcase
+   ============================================ */
+
+.playground {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.playground-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.pg-panel {
+  background: #fff;
+  border: 1px solid var(--paper-deep);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem 1.15rem;
+  box-shadow: var(--shadow);
+}
+
+.pg-panel h3 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pg-panel h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.pg-panel label {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.pg-input,
+.pg-textarea,
+.pg-select {
+  width: 100%;
+  border: 1px solid var(--paper-deep);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  margin-bottom: 0.5rem;
+}
+
+.pg-textarea {
+  min-height: 68px;
+  resize: vertical;
+  font-family: ui-monospace, SF Mono, Menlo, monospace;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.scope-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.pg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border: 1px solid var(--paper-deep);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.1s ease, color 0.1s ease;
+}
+
+.pg-btn:hover {
+  transform: translateY(-1px);
+  background: var(--paper);
+}
+
+.pg-btn.primary {
+  background: var(--ink);
+  color: #f8f6f2;
+  border-color: var(--ink);
+}
+
+.pg-btn.primary:hover {
+  background: #222;
+}
+
+.pg-btn.danger {
+  border-color: #c66;
+  color: #922;
+}
+
+.pg-btn.small {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+}
+
+.memories-list {
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--paper-deep);
+  border-radius: 10px;
+  background: #faf9f6;
+  padding: 0.25rem;
+}
+
+.memory-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  margin-bottom: 0.25rem;
+  background: #fff;
+  border: 1px solid var(--paper-deep);
+}
+
+.memory-item:last-child {
+  margin-bottom: 0;
+}
+
+.memory-item .mem-text {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.memory-item .mem-meta {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  margin-top: 0.15rem;
+}
+
+.memory-item .mem-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.mem-tag {
+  font-size: 0.65rem;
+  background: var(--paper-deep);
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+
+.memory-item .del-btn {
+  background: transparent;
+  border: none;
+  color: #944;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.memory-item .del-btn:hover {
+  opacity: 1;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.search-row input[type="text"] {
+  flex: 1 1 240px;
+}
+
+.search-row input[type="number"] {
+  width: 68px;
+}
+
+.search-row .pg-btn {
+  white-space: nowrap;
+}
+
+.results-list {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--paper-deep);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.result-item {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--paper-deep);
+  font-size: 0.9rem;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.result-score {
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  background: var(--paper-deep);
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.result-mem {
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.score-break {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.score-break span {
+  font-family: ui-monospace, monospace;
+}
+
+.chat-log {
+  height: 220px;
+  overflow-y: auto;
+  background: #1a1a1a;
+  color: #e8e6e1;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.chat-msg {
+  max-width: 82%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px;
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: #2f2f2f;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg.assistant {
+  align-self: flex-start;
+  background: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg .meta {
+  font-size: 0.68rem;
+  opacity: 0.6;
+  margin-bottom: 0.15rem;
+  display: block;
+}
+
+.chat-retrieved {
+  margin: 0.3rem 0 0.15rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+
+.chat-retrieved ul {
+  margin: 0.15rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-input-row input {
+  flex: 1;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--paper-deep);
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.95rem;
+}
+
+.note {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  opacity: 0.85;
+}
+
+.empty-state {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+  .chat-log {
+    height: 180px;
+  }
+}

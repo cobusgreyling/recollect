@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Showcase — Recollect</title>
+    <title>Interactive Showcase — Recollect</title>
     <meta
       name="description"
-      content="Example patterns for using Recollect: support bots, persistent assistants, and multi-agent memory scoping."
+      content="Live interactive demo of Recollect memory: add scoped facts, run hybrid semantic+keyword search, and experience the full chat retrieve→respond→remember loop — all in the browser."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -105,12 +105,98 @@ context = "\n".join(h["memory"] for h in hits["results"])</code></pre>
         </div>
       </section>
 
+      <!-- INTERACTIVE GITHUB SHOWCASE PLAYGROUND -->
+      <section class="section playground-section" id="playground">
+        <div class="container">
+          <div style="text-align:center; margin-bottom:1.25rem;">
+            <p class="eyebrow" style="color:var(--ink-soft); letter-spacing:.2em;">Browser demo • zero backend • localStorage</p>
+            <h2 style="margin-bottom:.35rem;">Interactive showcase</h2>
+            <p class="section-lead" style="max-width:62ch; margin-left:auto; margin-right:auto;">
+              Add facts, scope them, search with hybrid ranking, and run a full retrieve → respond → remember loop.
+              The retrieval and scoring mirror Recollect's local embedder + hybrid search (semantic + keyword + entity).
+            </p>
+          </div>
+
+          <div class="playground">
+            <!-- Row 1: Add + Memories -->
+            <div class="playground-grid">
+              <!-- Add memory -->
+              <div class="pg-panel">
+                <h4>Add memory</h4>
+                <textarea id="add-text" class="pg-textarea" placeholder="Prefers PostgreSQL over MySQL for new projects"></textarea>
+                <div class="scope-row">
+                  <input id="add-user" class="pg-input" placeholder="user_id" value="alice" />
+                  <input id="add-agent" class="pg-input" placeholder="agent_id (opt)" />
+                  <input id="add-run" class="pg-input" placeholder="run_id (opt)" />
+                </div>
+                <div class="pg-actions">
+                  <button class="pg-btn primary" onclick="addMemoryFromUI()">Add</button>
+                  <button class="pg-btn" onclick="seedSampleData()">Seed samples</button>
+                  <button class="pg-btn danger" onclick="clearAllMemories()">Clear</button>
+                </div>
+                <div class="note">Facts are stored only in your browser for this demo.</div>
+              </div>
+
+              <!-- Current memories -->
+              <div class="pg-panel">
+                <h4>Stored memories <span id="mem-count" style="font-weight:400; opacity:.7;"></span></h4>
+                <div id="memories-list" class="memories-list">
+                  <div class="empty-state">No memories yet. Use “Seed samples” or add your own.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Lab -->
+            <div class="pg-panel">
+              <h4>Hybrid search lab</h4>
+              <div class="search-row">
+                <input id="search-query" class="pg-input" type="text" placeholder="database preference" oninput="debouncedSearch()" />
+                <select id="filter-user" class="pg-select" style="max-width:150px" onchange="performSearch()">
+                  <option value="">Any user</option>
+                </select>
+                <select id="filter-agent" class="pg-select" style="max-width:130px" onchange="performSearch()">
+                  <option value="">Any agent</option>
+                </select>
+                <input id="top-k" class="pg-input" type="number" value="5" min="1" max="20" style="max-width:68px" onchange="performSearch()" />
+                <button class="pg-btn" onclick="performSearch()">Search</button>
+                <button class="pg-btn" onclick="clearSearch()">Clear</button>
+              </div>
+              <div id="search-results" class="results-list">
+                <div class="empty-state" style="padding:1.25rem;">Results will appear here. Try searching after adding or seeding data.</div>
+              </div>
+            </div>
+
+            <!-- Chat simulator -->
+            <div class="pg-panel">
+              <h4>Chat simulation (scoped to user)</h4>
+              <div style="margin-bottom:.4rem; display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+                <label style="font-size:.8rem; color:var(--ink-soft);">Active user for chat:</label>
+                <input id="chat-user" class="pg-input" style="max-width:140px; margin:0;" value="alice" onchange="renderChatLog()" />
+                <button class="pg-btn small" onclick="resetChat()">Reset chat</button>
+              </div>
+
+              <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+              <div class="chat-input-row">
+                <input id="chat-msg" class="pg-input" type="text" placeholder="What database do I prefer?" onkeydown="if(event.key==='Enter') runChatTurn()" />
+                <button class="pg-btn primary" onclick="runChatTurn()">Send turn</button>
+              </div>
+              <span class="note">Retrieves top memories → shows what would be injected → simulated reply → writes the turn back via add().</span>
+            </div>
+          </div>
+
+          <p style="text-align:center; margin-top:1rem; font-size:.85rem; color:var(--ink-soft);">
+            This demo replicates the local-dev path (<code>RecollectConfig.local_dev()</code>) entirely in the browser using the same hybrid scoring approach.
+          </p>
+        </div>
+      </section>
+
       <section class="section showcase-deep">
         <div class="container">
-          <h2>End-to-end chat loop</h2>
+          <h2>End-to-end chat loop (code)</h2>
           <p class="section-lead">
             The same flow as <code>examples/chat_with_memory.py</code>: retrieve, answer, then write
-            back new facts.
+            back new facts. The live demo above executes an equivalent loop using the real retrieval logic.
           </p>
           <pre class="code-block code-block--wide"><code>from openai import OpenAI
 from recollect import Memory
@@ -119,7 +205,7 @@ memory = Memory()
 client = OpenAI()
 user_id = "demo_user"
 
-def reply(message: str) -> str:
+def reply(message: str) -&gt; str:
     retrieved = memory.search(message, filters={"user_id": user_id}, top_k=5)
     memories = "\n".join(f"- {r['memory']}" for r in retrieved["results"])
     system = f"You are helpful. User memories:\n{memories or '- (none)'}"
@@ -141,11 +227,12 @@ def reply(message: str) -> str:
 
       <section class="section showcase-cta">
         <div class="container narrow cta-box">
-          <h2>Try it locally</h2>
+          <h2>Try it locally (full power)</h2>
           <p>No API key required for search/add smoke tests—use the local embedder and <code>infer=False</code>.</p>
           <div class="hero-actions hero-actions--dark">
             <a class="btn btn-primary" href="index.html#quickstart">Quickstart</a>
             <a class="btn btn-ghost" href="https://github.com/cobusgreyling/recollect">GitHub</a>
+            <a class="btn btn-ghost" href="#playground">Back to live demo ↑</a>
           </div>
         </div>
       </section>
@@ -158,5 +245,586 @@ def reply(message: str) -> str:
         <a href="https://github.com/cobusgreyling/recollect">github.com/cobusgreyling/recollect</a>
       </div>
     </footer>
+
+    <script>
+    // =====================================================
+    // Recollect Interactive Showcase — Pure client-side
+    // Faithful recreation of local embedder + hybrid search
+    // =====================================================
+    (function () {
+      const LS_KEY = 'recollect_demo_memories_v1';
+      const LS_CHAT_KEY = 'recollect_demo_chat_v1';
+
+      let memories = []; // {id, text, user_id, agent_id, run_id, entities, created_at}
+      let chatLog = [];  // {role:'user'|'assistant'|'system'|'retrieved', content, meta? }
+
+      // --- Utils: tokenize + simple hash embedder (mirrors Python local embedder) ---
+      function tokenize(text) {
+        if (!text) return [];
+        return (text.toLowerCase().match(/[a-z0-9']+/g) || []);
+      }
+
+      function hashToBuckets(token, dim) {
+        // Fast deterministic feature hasher (approximates the sha-based one)
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < token.length; i++) {
+          h ^= token.charCodeAt(i);
+          h = Math.imul(h, 16777619) >>> 0; // FNV-ish
+        }
+        const vec = new Array(dim).fill(0);
+        let seed = h >>> 0;
+        const picks = 7;
+        for (let k = 0; k < picks; k++) {
+          const idx = seed % dim;
+          const sign = ((seed >>> 5) & 1) ? 1.0 : -1.0;
+          vec[idx] += sign;
+          seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+        }
+        return vec;
+      }
+
+      function normalize(vec) {
+        let norm = 0;
+        for (let i = 0; i < vec.length; i++) norm += vec[i] * vec[i];
+        norm = Math.sqrt(norm) || 1.0;
+        return vec.map(v => v / norm);
+      }
+
+      function localEmbed(text, dim = 64) {
+        const tokens = tokenize(text);
+        if (tokens.length === 0) {
+          const v = new Array(dim).fill(0);
+          v[0] = 1.0;
+          return normalize(v);
+        }
+        const acc = new Array(dim).fill(0);
+        for (const tok of tokens) {
+          const part = hashToBuckets(tok, dim);
+          for (let i = 0; i < dim; i++) acc[i] += part[i];
+        }
+        return normalize(acc);
+      }
+
+      function cosine(a, b) {
+        let dot = 0, na = 0, nb = 0;
+        const n = Math.min(a.length, b.length);
+        for (let i = 0; i < n; i++) {
+          dot += a[i] * b[i];
+          na += a[i] * a[i];
+          nb += b[i] * b[i];
+        }
+        return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-12);
+      }
+
+      // --- Entity extraction (simple capitalized words) ---
+      function extractEntities(text) {
+        const words = text.match(/\b[A-Z][a-zA-Z0-9']{1,}\b/g) || [];
+        return Array.from(new Set(words));
+      }
+
+      // --- Simplified BM25 (batch style, single query) ---
+      function bm25Score(qTokens, dTokens, avgDL, k1 = 1.5, b = 0.75) {
+        if (!qTokens.length || !dTokens.length) return 0.0;
+        const tf = {};
+        for (const t of dTokens) tf[t] = (tf[t] || 0) + 1;
+        let score = 0.0;
+        const dl = dTokens.length;
+        for (const term of qTokens) {
+          const freq = tf[term] || 0;
+          if (!freq) continue;
+          const idf = Math.log(1 + 1); // constant as in the Python reference
+          const denom = freq + k1 * (1 - b + (b * dl) / Math.max(avgDL, 1));
+          score += idf * (freq * (k1 + 1)) / denom;
+        }
+        return score;
+      }
+
+      // --- Hybrid search (matches Python implementation spirit) ---
+      function hybridSearch(query, filters = {}, topK = 5) {
+        const q = (query || '').trim();
+        if (!q) return [];
+        const qTokens = tokenize(q);
+        const qEntities = new Set(qTokens.filter(t => /^[A-Z]/.test(t))); // rough
+
+        // 1. filter candidates
+        let cands = memories.filter(m => {
+          if (filters.user_id && m.user_id !== filters.user_id) return false;
+          if (filters.agent_id && m.agent_id !== filters.agent_id) return false;
+          if (filters.run_id && m.run_id !== filters.run_id) return false;
+          return true;
+        });
+        if (!cands.length) return [];
+
+        // 2. embeddings + scores
+        const qEmb = localEmbed(q);
+        const docTokenLists = cands.map(c => tokenize(c.text));
+        const avgDL = docTokenLists.reduce((s, t) => s + t.length, 0) / docTokenLists.length;
+
+        const scored = cands.map((rec, idx) => {
+          const emb = localEmbed(rec.text); // recompute cheaply for demo (or could cache)
+          const sem = cosine(qEmb, emb);
+
+          const kw = bm25Score(qTokens, docTokenLists[idx], avgDL);
+
+          // entity overlap
+          let ent = 0.0;
+          if (rec.entities && rec.entities.length) {
+            const entSet = new Set(rec.entities.map(e => e.toLowerCase()));
+            let overlap = 0;
+            for (const e of qEntities) if (entSet.has(e.toLowerCase())) overlap++;
+            ent = overlap / Math.max(entSet.size, 1);
+          }
+
+          // Fuse exactly like library (keyword_weight=0.35, entity_boost=0.15)
+          const keywordW = 0.35;
+          const fused = (1 - keywordW) * sem + keywordW * (kw > 0 ? Math.min(kw, 3) / 3 : 0) + 0.15 * ent;
+
+          return {
+            id: rec.id,
+            memory: rec.text,
+            score: fused,
+            semantic: sem,
+            keyword: kw,
+            entity_overlap: ent,
+            scope: {
+              user_id: rec.user_id,
+              agent_id: rec.agent_id,
+              run_id: rec.run_id
+            }
+          };
+        });
+
+        scored.sort((a, b) => b.score - a.score);
+        return scored.slice(0, topK);
+      }
+
+      // --- Persistence ---
+      function load() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          memories = raw ? JSON.parse(raw) : [];
+        } catch (_) { memories = []; }
+
+        try {
+          const cr = localStorage.getItem(LS_CHAT_KEY);
+          chatLog = cr ? JSON.parse(cr) : [];
+        } catch (_) { chatLog = []; }
+      }
+      function save() {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(memories)); } catch (_) {}
+      }
+      function saveChat() {
+        try { localStorage.setItem(LS_CHAT_KEY, JSON.stringify(chatLog)); } catch (_) {}
+      }
+
+      function genId() {
+        return 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+
+      // --- Core API (mirrors Python Memory) ---
+      function addMemory(text, { user_id = null, agent_id = null, run_id = null } = {}) {
+        const t = (text || '').trim();
+        if (!t) return null;
+        const rec = {
+          id: genId(),
+          text: t,
+          user_id: user_id || null,
+          agent_id: agent_id || null,
+          run_id: run_id || null,
+          entities: extractEntities(t),
+          created_at: new Date().toISOString()
+        };
+        memories.unshift(rec);
+        save();
+        renderMemories();
+        updateFilterOptions();
+        return rec;
+      }
+
+      function deleteMemory(id) {
+        memories = memories.filter(m => m.id !== id);
+        save();
+        renderMemories();
+        updateFilterOptions();
+        performSearch(); // refresh results if visible
+      }
+
+      function clearAll() {
+        memories = [];
+        save();
+        chatLog = [];
+        saveChat();
+        renderMemories();
+        updateFilterOptions();
+        document.getElementById('search-results').innerHTML =
+          '<div class="empty-state" style="padding:1.25rem;">Cleared. Add or seed new memories.</div>';
+        renderChatLog();
+      }
+
+      // --- Rendering ---
+      function renderMemories() {
+        const container = document.getElementById('memories-list');
+        const countEl = document.getElementById('mem-count');
+        countEl.textContent = memories.length ? `(${memories.length})` : '';
+
+        if (!memories.length) {
+          container.innerHTML = '<div class="empty-state">No memories yet. Use “Seed samples” or add your own.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        memories.forEach(m => {
+          const el = document.createElement('div');
+          el.className = 'memory-item';
+          const tags = [];
+          if (m.user_id) tags.push(`<span class="mem-tag">user:${escapeHtml(m.user_id)}</span>`);
+          if (m.agent_id) tags.push(`<span class="mem-tag">agent:${escapeHtml(m.agent_id)}</span>`);
+          if (m.run_id) tags.push(`<span class="mem-tag">run:${escapeHtml(m.run_id)}</span>`);
+
+          el.innerHTML = `
+            <div style="flex:1; min-width:0;">
+              <div class="mem-text">${escapeHtml(m.text)}</div>
+              <div class="mem-tags">${tags.join('')}</div>
+            </div>
+            <button class="del-btn" title="Delete" aria-label="Delete memory">×</button>
+          `;
+          el.querySelector('.del-btn').addEventListener('click', () => deleteMemory(m.id));
+          container.appendChild(el);
+        });
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      function updateFilterOptions() {
+        const users = new Set(memories.map(m => m.user_id).filter(Boolean));
+        const agents = new Set(memories.map(m => m.agent_id).filter(Boolean));
+
+        const fu = document.getElementById('filter-user');
+        const fa = document.getElementById('filter-agent');
+
+        // preserve current
+        const curU = fu.value;
+        const curA = fa.value;
+
+        fu.innerHTML = '<option value="">Any user</option>';
+        [...users].sort().forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u; opt.textContent = u;
+          fu.appendChild(opt);
+        });
+        if ([...users].includes(curU)) fu.value = curU;
+
+        fa.innerHTML = '<option value="">Any agent</option>';
+        [...agents].sort().forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a; opt.textContent = a;
+          fa.appendChild(opt);
+        });
+        if ([...agents].includes(curA)) fa.value = curA;
+      }
+
+      function performSearch() {
+        const qEl = document.getElementById('search-query');
+        const fu = document.getElementById('filter-user');
+        const fa = document.getElementById('filter-agent');
+        const kEl = document.getElementById('top-k');
+        const out = document.getElementById('search-results');
+
+        const query = qEl.value.trim();
+        const filters = {};
+        if (fu.value) filters.user_id = fu.value;
+        if (fa.value) filters.agent_id = fa.value;
+        const topK = Math.max(1, Math.min(20, parseInt(kEl.value || '5', 10)));
+
+        if (!query) {
+          out.innerHTML = '<div class="empty-state" style="padding:1.25rem;">Type a query above to run hybrid search.</div>';
+          return;
+        }
+
+        const hits = hybridSearch(query, filters, topK);
+        if (!hits.length) {
+          out.innerHTML = '<div class="empty-state" style="padding:1.25rem;">No matches for current filters + query.</div>';
+          return;
+        }
+
+        out.innerHTML = '';
+        hits.forEach(h => {
+          const div = document.createElement('div');
+          div.className = 'result-item';
+          const scopeParts = [];
+          if (h.scope.user_id) scopeParts.push('u:' + h.scope.user_id);
+          if (h.scope.agent_id) scopeParts.push('a:' + h.scope.agent_id);
+          if (h.scope.run_id) scopeParts.push('r:' + h.scope.run_id);
+          const scopeStr = scopeParts.length ? scopeParts.join(' ') : '—';
+
+          div.innerHTML = `
+            <div class="result-head">
+              <span style="font-size:.78rem; color:#666;">${scopeStr}</span>
+              <span class="result-score">${h.score.toFixed(3)}</span>
+            </div>
+            <div class="result-mem">${escapeHtml(h.memory)}</div>
+            <div class="score-break">
+              <span>sem ${h.semantic.toFixed(2)}</span>
+              <span>kw ${h.keyword.toFixed(2)}</span>
+              <span>ent ${h.entity_overlap.toFixed(2)}</span>
+            </div>
+          `;
+          out.appendChild(div);
+        });
+      }
+
+      let searchTimer = null;
+      function debouncedSearch() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(performSearch, 140);
+      }
+
+      function clearSearch() {
+        document.getElementById('search-query').value = '';
+        document.getElementById('search-results').innerHTML =
+          '<div class="empty-state" style="padding:1.25rem;">Search cleared.</div>';
+      }
+
+      // --- Chat simulation ---
+      function renderChatLog() {
+        const box = document.getElementById('chat-log');
+        box.innerHTML = '';
+
+        if (!chatLog.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.style.color = 'rgba(232,230,225,0.6)';
+          empty.textContent = 'No messages yet. Send a turn to begin the memory-aware chat simulation.';
+          box.appendChild(empty);
+          return;
+        }
+
+        chatLog.forEach(entry => {
+          if (entry.role === 'retrieved') {
+            const div = document.createElement('div');
+            div.className = 'chat-retrieved';
+            let html = '<div style="opacity:.65; font-size:.7rem; margin-bottom:2px;">retrieved</div><ul>';
+            (entry.items || []).forEach(it => {
+              html += `<li>${escapeHtml(it.memory || it)}</li>`;
+            });
+            html += '</ul>';
+            div.innerHTML = html;
+            box.appendChild(div);
+            return;
+          }
+
+          const div = document.createElement('div');
+          div.className = 'chat-msg ' + (entry.role === 'user' ? 'user' : 'assistant');
+          if (entry.meta) {
+            const m = document.createElement('span');
+            m.className = 'meta';
+            m.textContent = entry.meta;
+            div.appendChild(m);
+          }
+          const c = document.createElement('div');
+          c.textContent = entry.content || '';
+          div.appendChild(c);
+          box.appendChild(div);
+        });
+
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function resetChat() {
+        chatLog = [];
+        saveChat();
+        renderChatLog();
+      }
+
+      function runChatTurn() {
+        const userInput = document.getElementById('chat-msg');
+        const userIdEl = document.getElementById('chat-user');
+        const msg = (userInput.value || '').trim();
+        if (!msg) return;
+
+        const userId = (userIdEl.value || 'demo_user').trim();
+
+        // 1. User message
+        chatLog.push({ role: 'user', content: msg, meta: 'you' });
+
+        // 2. Retrieve (scoped to this user primarily)
+        const hits = hybridSearch(msg, { user_id: userId }, 4);
+        const retrievedTexts = hits.map(h => h.memory);
+
+        // show retrieved block
+        chatLog.push({ role: 'retrieved', items: hits.length ? hits : [{memory: '(no prior memories)'}] });
+
+        // 3. Simulated reply (memory-aware)
+        const replyText = generateReply(msg, hits, userId);
+        chatLog.push({ role: 'assistant', content: replyText, meta: 'assistant (simulated)' });
+
+        // 4. Write back (add the exchange like the real examples)
+        // We store the raw messages so the demo behaves like infer=False path + user/assistant pair
+        addMemory(`User: ${msg}`, { user_id: userId });
+        addMemory(`Assistant: ${replyText}`, { user_id: userId });
+
+        // render + persist
+        renderChatLog();
+        saveChat();
+
+        // clear input
+        userInput.value = '';
+        // refresh search results if a query is present (nice touch)
+        setTimeout(() => {
+          const sq = document.getElementById('search-query');
+          if (sq && sq.value.trim()) performSearch();
+        }, 60);
+      }
+
+      function generateReply(userMsg, hits, userId) {
+        const lower = userMsg.toLowerCase();
+        const facts = hits.map(h => h.memory.toLowerCase());
+
+        const hasDB = facts.some(f => /postgres|mysql|database|sql/i.test(f)) || /database|postgres|mysql|sql/i.test(lower);
+        const hasEditor = facts.some(f => /dark|theme|vs ?code|editor|vscode/i.test(f));
+        const hasCoffee = facts.some(f => /coffee|tea|drink/i.test(f));
+
+        let base = "Understood.";
+
+        if (hasDB) {
+          base += " I'll remember your database preference.";
+        } else if (/database|db|sql/i.test(lower)) {
+          base += " Noted on the database topic.";
+        }
+
+        if (hasEditor && /editor|theme|dark|code/i.test(lower)) {
+          base += " Dark mode / editor prefs captured.";
+        }
+
+        if (hits.length > 0 && !hasDB && !hasEditor) {
+          // Generic but show we used memory
+          base += " Taking your earlier context into account.";
+        }
+
+        if (hits.length === 0) {
+          base = "Thanks — starting a memory profile for you. I'll use this going forward.";
+        }
+
+        // Small variety
+        const closers = [" How else can I help?", " Anything else on your mind?", " Got it."];
+        return base + closers[Math.floor(Math.random() * closers.length)];
+      }
+
+      // --- Seed data (good realistic examples) ---
+      function seedSampleData() {
+        // Avoid massive dupes
+        const existingTexts = new Set(memories.map(m => m.text.toLowerCase()));
+        const samples = [
+          { text: "Prefers PostgreSQL over MySQL for new projects", user: "alice" },
+          { text: "Likes dark theme and uses VS Code as daily driver", user: "alice" },
+          { text: "Drinks way too much coffee — oat milk latte", user: "alice" },
+          { text: "Last successful run used JWT middleware with RS256 keys", user: "alice", run: "run_42" },
+          { text: "Team lead — prefers concise status updates over long prose", user: "bob" },
+          { text: "Favorite editor font is JetBrains Mono at 15px", user: "bob" },
+        ];
+        let added = 0;
+        samples.forEach(s => {
+          if (!existingTexts.has(s.text.toLowerCase())) {
+            addMemory(s.text, { user_id: s.user, run_id: s.run || null });
+            added++;
+          }
+        });
+        if (added === 0) {
+          // still make sure UI is fresh
+          renderMemories();
+        }
+        // Also prime a tiny chat history for first-time visitors
+        const chatBox = document.getElementById('chat-log');
+        if (chatLog.length === 0) {
+          chatLog.push({ role: 'user', content: "Hey, what do I use for databases?", meta: 'you' });
+          chatLog.push({ role: 'retrieved', items: [{memory: "Prefers PostgreSQL over MySQL for new projects"}] });
+          chatLog.push({ role: 'assistant', content: "Understood. I'll remember your PostgreSQL preference. How else can I help?", meta: 'assistant (simulated)' });
+          saveChat();
+          renderChatLog();
+        }
+        // Make search interesting immediately
+        setTimeout(() => {
+          const sq = document.getElementById('search-query');
+          if (sq && !sq.value) {
+            sq.value = 'database';
+            performSearch();
+          }
+        }, 120);
+      }
+
+      function addMemoryFromUI() {
+        const text = document.getElementById('add-text').value;
+        const user = document.getElementById('add-user').value.trim() || null;
+        const agent = document.getElementById('add-agent').value.trim() || null;
+        const run = document.getElementById('add-run').value.trim() || null;
+        if (!text || !text.trim()) return;
+        addMemory(text.trim(), { user_id: user, agent_id: agent, run_id: run });
+        document.getElementById('add-text').value = '';
+        // helpful: if search box has content, re-run
+        const sq = document.getElementById('search-query');
+        if (sq && sq.value.trim()) setTimeout(performSearch, 30);
+      }
+
+      function clearAllMemories() {
+        if (!memories.length) return;
+        if (!confirm('Clear all demo memories?')) return;
+        clearAll();
+      }
+
+      // --- Boot ---
+      function init() {
+        load();
+        renderMemories();
+        updateFilterOptions();
+        renderChatLog();
+
+        // If nothing, auto-seed a pleasant first experience
+        if (!memories.length) {
+          // Seed silently but visibly
+          setTimeout(() => {
+            if (!memories.length) {
+              seedSampleData();
+            }
+          }, 260);
+        } else {
+          // If we already have data, run a nice default search
+          setTimeout(() => {
+            const sq = document.getElementById('search-query');
+            if (sq && !sq.value.trim()) {
+              sq.value = 'editor';
+              performSearch();
+            }
+          }, 420);
+        }
+
+        // Keyboard niceties
+        document.addEventListener('keydown', function(e) {
+          if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+            const sq = document.getElementById('search-query');
+            if (sq) { e.preventDefault(); sq.focus(); sq.select(); }
+          }
+        });
+
+        // Expose a tiny API in console for the curious
+        window.RecollectDemo = {
+          add: (text, opts) => addMemory(text, opts),
+          search: (q, f, k) => hybridSearch(q, f || {}, k || 5),
+          clear: () => clearAll(),
+          getMemories: () => memories.slice()
+        };
+
+        // Gentle hint in console
+        // console.log('%c[Recollect] Interactive demo ready. window.RecollectDemo available.', 'color:#666');
+      }
+
+      // Start
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+    </script>
   </body>
 </html>

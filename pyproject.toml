@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "recollect"
+name = "recollect-ai"
 version = "0.2.0"
 description = "Long-term memory layer for AI agents and assistants"
 readme = "README.md"

@@ -1,6 +1,8 @@
 # Publishing
 
-## PyPI (recollect)
+## PyPI (`recollect-ai`)
+
+The PyPI project name is **`recollect-ai`** (the name `recollect` is taken). Python import stays `recollect`.
 
 ```bash
 pip install build twine
@@ -8,9 +10,9 @@ python -m build
 twine upload dist/*
 ```
 
-Set `PYPI_API_TOKEN` or use `twine login`.
+Or create a GitHub Release to trigger `.github/workflows/publish.yml` (trusted publishing).
 
-## PyPI (llama-index-memory-recollect)
+## PyPI (`llama-index-memory-recollect`)
 
 ```bash
 cd packages/llama-index-memory-recollect
@@ -18,7 +20,11 @@ python -m build
 twine upload dist/*
 ```
 
-Publish `recollect` first so the dependency resolves.
+Publish `recollect-ai` first so the dependency resolves.
+
+## LlamaHub
+
+See [LLAMAHUB.md](LLAMAHUB.md). Upstream listing is added via PR to `run-llama/llama_index`.
 
 ## GitHub
 

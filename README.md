@@ -2,7 +2,7 @@
 
 ![Recollect header — memory, books, and time](docs/assets/header.jpg)
 
-**[Home](docs/index.html)** · **[Showcase](docs/showcase.html)** · **[LangChain](docs/integrations/langchain.md)** · **[LlamaIndex](docs/integrations/llama-index.md)**
+**[Home](docs/index.html)** · **[Interactive Showcase](docs/showcase.html)** · **[LangChain](docs/integrations/langchain.md)** · **[LlamaIndex](docs/integrations/llama-index.md)**
 
 Long-term **memory layer** for AI agents and assistants—self-hosted, library-first, and integration-ready for **LangChain** and **LlamaIndex** OSS workflows.
 
@@ -23,10 +23,10 @@ pip install -e ".[dev]"
 pip install -e packages/llama-index-memory-recollect   # LlamaIndex adapter
 ```
 
-PyPI (once published):
+PyPI (package name **`recollect-ai`**, import **`recollect`**):
 
 ```bash
-pip install recollect
+pip install recollect-ai
 pip install llama-index-memory-recollect
 ```
 
@@ -109,6 +109,20 @@ make demo
 - [x] Async API, multi-backend stores
 - [ ] LlamaHub listing + upstream LlamaIndex notebook PR
 - [ ] LangGraph cookbook in docs site
+
+## GitHub Pages Demo
+
+The `docs/` folder contains a fully interactive showcase (no backend) that runs the same hybrid retrieval and scoping logic live in the browser:
+
+- Add memories with any combination of `user_id` / `agent_id` / `run_id`
+- Real-time hybrid search (semantic + keyword + entity signals, using the same local hashing embedder approach)
+- Full chat simulation: retrieve context, simulated reply, write the exchange back to memory
+
+Once you enable GitHub Pages for this repository (Settings → Pages → Source: **Deploy from a branch** → `main` / `docs`), the demo will be live at:
+
+```
+https://<yourname>.github.io/recollect/showcase.html
+```
 
 ## Acknowledgments
 
