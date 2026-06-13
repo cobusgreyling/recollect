@@ -7,7 +7,7 @@
 > **The showcase on this page is raw code.**  
 > For the real interactive presentation (add memories, hybrid search, chat simulation), go to the **live site** above.
 
-Long-term **memory layer** for AI agents and assistants—self-hosted, library-first, and integration-ready for **LangChain** and **LlamaIndex** OSS workflows.
+Long-term **memory layer** for AI agents and assistants—self-hosted, **library-first**, and integration-ready for **LangChain** and **LlamaIndex** OSS workflows. Small, embeddable, and transparent.
 
 ## Why Recollect
 
@@ -17,20 +17,35 @@ Long-term **memory layer** for AI agents and assistants—self-hosted, library-f
 - **Pluggable stores** — SQLite (default), Qdrant, Chroma, pgvector
 - **No platform required** — embed in your app; open Apache 2.0
 
+### Why Recollect vs alternatives?
+
+Recollect is a **small, embeddable library** (not a platform or hosted service). Key differentiators:
+
+- **Transparent & debuggable retrieval**: `search` returns per-result `metadata` with `semantic`, `keyword`, and `entity_overlap` scores so you can see exactly why a memory ranked high.
+- **Best-in-class local developer experience**: `RecollectConfig.local_dev()` gives you a fully working memory layer with **zero API keys**, using a fast deterministic local embedder + SQLite. Perfect for tests, demos, and CI.
+- **Strong multi-tenancy by design**: Every memory is partitioned by `user_id` / `agent_id` / `run_id` (and arbitrary metadata). Great for SaaS, multi-agent, or per-conversation isolation.
+- **Framework-native, not framework-heavy**: Real (not toy) integrations for LangChain (tools + Runnable) and LlamaIndex (`BaseMemory`). Drop it into existing graphs/agents with minimal glue.
+- **Self-host everything**: Your data, your infra choices (or SQLite file on disk). No usage-based billing surprises.
+- **Tiny and auditable**: Minimal core dependencies. Apache 2.0. Easy to read the retrieval logic and adapt.
+
+If you want a batteries-included cloud memory service with lots of bells and graphs, look at Mem0 or Zep. If you want a **focused, controllable, library-first** long-term memory layer you can understand and ship inside your own code, Recollect is built for you.
+
 ## Install
+
+**From PyPI (recommended for usage):**
+
+```bash
+pip install recollect-ai
+pip install llama-index-memory-recollect   # optional LlamaIndex adapter
+```
+
+**From source (for development or latest):**
 
 ```bash
 git clone https://github.com/cobusgreyling/recollect.git
 cd recollect
 pip install -e ".[dev]"
-pip install -e packages/llama-index-memory-recollect   # LlamaIndex adapter
-```
-
-PyPI (package name **`recollect-ai`**, import **`recollect`**):
-
-```bash
-pip install recollect-ai
-pip install llama-index-memory-recollect
+pip install -e packages/llama-index-memory-recollect
 ```
 
 ### Extras
@@ -70,7 +85,7 @@ tools = create_recollect_tools(memory, user_id="alice")
 ctx = memory_runnable(memory, user_id="alice").invoke({"input": "database prefs"})
 ```
 
-Examples: [`examples/langchain_travel_agent.py`](examples/langchain_travel_agent.py), [`examples/langgraph_memory_node.py`](examples/langgraph_memory_node.py)
+Examples: [`examples/langchain_travel_agent.py`](examples/langchain_travel_agent.py), [`examples/langgraph_memory_node.py`](examples/langgraph_memory_node.py), [`examples/fastapi_memory_service.py`](examples/fastapi_memory_service.py) (HTTP sidecar), [`examples/chat_with_memory.py`](examples/chat_with_memory.py)
 
 ## LlamaIndex
 
@@ -97,21 +112,30 @@ Package: [`packages/llama-index-memory-recollect`](packages/llama-index-memory-r
 
 `AsyncMemory` provides the same API with `async`/`await`.
 
+See [Production & Scale notes](docs/production-and-scale.md) for backend choice, performance characteristics, extraction cost considerations, and operational guidance.
+
 ## Development
 
 ```bash
 make install
 make test
+make lint
 make demo
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## Roadmap
 
 - [x] LangChain tools + Runnable
 - [x] LlamaIndex `RecollectMemory`
 - [x] Async API, multi-backend stores
-- [ ] LlamaHub listing + upstream LlamaIndex notebook PR
-- [ ] LangGraph cookbook in docs site
+- [x] Ruff linting + formatting, expanded tests, InMemoryStore, basic logging, robust stores
+- [x] LlamaHub listing documentation + standalone PyPI packages
+- [ ] Full LangGraph + production cookbook examples
+- [ ] Upstream LlamaIndex docs notebook PR
+- [ ] Optional graph / entity relationship layer (future)
+- [ ] Public recall quality benchmarks / evals harness
 
 ## 🌐 Live Interactive Showcase (recommended)
 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from recollect.config import RecollectConfig
 from recollect.memory_core import MemoryCore
 

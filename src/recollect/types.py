@@ -40,10 +40,7 @@ class MemoryRecord(BaseModel):
 
     def matches_filters(self, filters: dict[str, str]) -> bool:
         scope = self.scope.as_filters()
-        for key, value in filters.items():
-            if scope.get(key) != value:
-                return False
-        return True
+        return all(scope.get(key) == value for key, value in filters.items())
 
 
 class SearchHit(BaseModel):
