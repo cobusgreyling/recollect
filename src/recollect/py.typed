@@ -1,0 +1,2 @@
+# PEP 561 marker file for inline type hints support.
+# This package supports type checking.
