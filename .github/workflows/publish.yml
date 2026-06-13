@@ -19,14 +19,7 @@ jobs:
           python-version: "3.12"
       - run: pip install build twine
       - run: python -m build
-      - name: Publish (trusted publishing)
-        id: oidc_publish
-        continue-on-error: true
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: dist/
-      - name: Publish (API token fallback)
-        if: steps.oidc_publish.outcome == 'failure' && secrets.PYPI_API_TOKEN != ''
+      - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
@@ -43,14 +36,7 @@ jobs:
       - run: pip install build twine
       - run: python -m build
         working-directory: packages/llama-index-memory-recollect
-      - name: Publish (trusted publishing)
-        id: oidc_publish
-        continue-on-error: true
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: packages/llama-index-memory-recollect/dist/
-      - name: Publish (API token fallback)
-        if: steps.oidc_publish.outcome == 'failure' && secrets.PYPI_API_TOKEN != ''
+      - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
