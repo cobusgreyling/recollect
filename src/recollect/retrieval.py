@@ -14,7 +14,9 @@ def _tokenize(text: str) -> list[str]:
     return [t for t in text.lower().split() if t]
 
 
-def bm25_score(query_tokens: list[str], doc_tokens: list[str], avg_dl: float, k1: float = 1.5, b: float = 0.75) -> float:
+def bm25_score(
+    query_tokens: list[str], doc_tokens: list[str], avg_dl: float, k1: float = 1.5, b: float = 0.75
+) -> float:
     if not query_tokens or not doc_tokens:
         return 0.0
     dl = len(doc_tokens)
@@ -45,15 +47,13 @@ def hybrid_search(
     doc_token_lists = [_tokenize(rec.text) for rec, _ in candidates]
     avg_dl = sum(len(d) for d in doc_token_lists) / max(len(doc_token_lists), 1)
 
-    bm25_scores = [
-        bm25_score(query_tokens, doc_tokens, avg_dl) for doc_tokens in doc_token_lists
-    ]
+    bm25_scores = [bm25_score(query_tokens, doc_tokens, avg_dl) for doc_tokens in doc_token_lists]
     max_bm25 = max(bm25_scores) if bm25_scores else 0.0
 
     query_entities = {t.lower() for t in query.split() if t[:1].isupper()}
 
     hits: list[SearchHit] = []
-    for (record, emb), raw_bm25 in zip(candidates, bm25_scores):
+    for (record, emb), raw_bm25 in zip(candidates, bm25_scores, strict=True):
         semantic = cosine_similarity(query_embedding, emb)
         keyword = (raw_bm25 / max_bm25) if max_bm25 > 0 else 0.0
         entity_overlap = 0.0
