@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recollect — Memory for AI Agents</title>
+    <meta
+      name="description"
+      content="Recollect is a long-term memory layer for AI agents: extract durable facts, scope by user or session, and retrieve with hybrid search."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="logo" href="#">Recollect</a>
+        <div class="nav-links">
+          <a href="#how-it-works">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#showcase">Showcase</a>
+          <a href="https://github.com/cobusgreyling/recollect" target="_blank" rel="noreferrer"
+            >GitHub</a
+          >
+        </div>
+      </nav>
+      <div class="hero">
+        <img
+          class="hero-image"
+          src="assets/header.jpg"
+          alt="Illustration of a writer at a desk with memories flowing from thought into books and time"
+          width="1920"
+          height="1080"
+        />
+        <div class="hero-overlay">
+          <p class="eyebrow">Long-term memory for agents</p>
+          <h1>Turn conversations into durable context</h1>
+          <p class="hero-lead">
+            Recollect extracts atomic facts from chat, scopes them per user or session, and surfaces
+            the right memories when your agent needs them.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://github.com/cobusgreyling/recollect"
+              >View source</a
+            >
+            <a class="btn btn-ghost" href="#quickstart">Quickstart</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section intro" id="overview">
+        <div class="container narrow">
+          <h2>Memory that outlives the context window</h2>
+          <p>
+            Agents forget. Preferences, constraints, and confirmed outcomes disappear when the session
+            ends. Recollect gives you a small, embeddable library to <strong>add</strong> facts from
+            dialogue and <strong>search</strong> them later with semantic, keyword, and entity
+            signals—without locking you into a hosted platform.
+          </p>
+        </div>
+      </section>
+
+      <section class="section flow" id="how-it-works">
+        <div class="container">
+          <h2>How it works</h2>
+          <ol class="pipeline">
+            <li>
+              <span class="step-num">1</span>
+              <h3>Ingest</h3>
+              <p>Pass raw text or full message threads. Optional LLM extraction yields ADD-only atomic facts.</p>
+            </li>
+            <li>
+              <span class="step-num">2</span>
+              <h3>Scope</h3>
+              <p>Tag memories with <code>user_id</code>, <code>agent_id</code>, or <code>run_id</code> filters.</p>
+            </li>
+            <li>
+              <span class="step-num">3</span>
+              <h3>Embed &amp; store</h3>
+              <p>Vectors and metadata land in local SQLite under <code>~/.recollect</code> by default.</p>
+            </li>
+            <li>
+              <span class="step-num">4</span>
+              <h3>Retrieve</h3>
+              <p>Hybrid ranking blends embeddings, BM25-style keywords, and entity overlap for the top hits.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section features" id="features">
+        <div class="container">
+          <h2>Built for production-minded prototypes</h2>
+          <div class="feature-grid">
+            <article class="card">
+              <h3>ADD-only extraction</h3>
+              <p>Facts accumulate over time. Nothing is silently overwritten during ingestion.</p>
+            </article>
+            <article class="card">
+              <h3>Hybrid retrieval</h3>
+              <p>Semantic similarity plus keyword and entity boosts in one fused score.</p>
+            </article>
+            <article class="card">
+              <h3>Local-first</h3>
+              <p>Ship with SQLite and a deterministic local embedder for tests—add OpenAI when ready.</p>
+            </article>
+            <article class="card">
+              <h3>Simple API</h3>
+              <p><code>add</code>, <code>search</code>, <code>get</code>, <code>get_all</code>, <code>delete</code>—five methods to start.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section showcase" id="showcase">
+        <div class="container">
+          <h2>Showcase</h2>
+          <p class="section-lead">
+            Three patterns teams reach for first: personalized support, long-running assistants, and
+            multi-agent workflows.
+          </p>
+          <div class="showcase-grid">
+            <article class="showcase-card">
+              <div class="showcase-tag">Support</div>
+              <h3>Tailored replies</h3>
+              <p>
+                Before each turn, search memories for the customer’s plan tier, past issues, and tone
+                preferences—inject the top facts into the system prompt.
+              </p>
+              <pre><code>hits = memory.search(
+    message,
+    filters={"user_id": customer_id},
+    top_k=5,
+)</code></pre>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-tag">Assistant</div>
+              <h3>Continuity across sessions</h3>
+              <p>
+                After responding, append the exchange with <code>memory.add</code> so the next login
+                still knows location, stack choices, and standing instructions.
+              </p>
+              <pre><code>memory.add(
+    [{"role": "user", "content": msg},
+     {"role": "assistant", "content": reply}],
+    user_id=user_id,
+)</code></pre>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-tag">Agents</div>
+              <h3>Per-run isolation</h3>
+              <p>
+                Scope episodic tool outcomes with <code>run_id</code> while keeping stable user
+                preferences under <code>user_id</code> for cross-run recall.
+              </p>
+              <pre><code>memory.add(
+    tool_summary,
+    user_id="team",
+    run_id=run_id,
+    infer=False,
+)</code></pre>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section quickstart" id="quickstart">
+        <div class="container split">
+          <div>
+            <h2>Quickstart</h2>
+            <pre class="install"><code>git clone https://github.com/cobusgreyling/recollect.git
+cd recollect
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"</code></pre>
+          </div>
+          <div>
+            <pre class="code-block"><code>from recollect import Memory, RecollectConfig
+from recollect.config import EmbedderConfig
+
+memory = Memory(
+    RecollectConfig(
+        extraction_enabled=False,
+        embedder=EmbedderConfig(provider="local"),
+    )
+)
+
+memory.add("Prefers PostgreSQL over MySQL", user_id="alice", infer=False)
+print(memory.search("database", filters={"user_id": "alice"}))</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <p>Recollect · Apache 2.0</p>
+        <a href="https://github.com/cobusgreyling/recollect">github.com/cobusgreyling/recollect</a>
+      </div>
+    </footer>
+  </body>
+</html>

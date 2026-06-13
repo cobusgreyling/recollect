@@ -1,6 +1,8 @@
 # Recollect
 
-Long-term memory layer for AI agents and assistants. Recollect turns conversations into durable facts, scopes them per user/agent/session, and retrieves the right context with semantic + keyword + entity signals.
+![Recollect header — memory, books, and time](docs/assets/header.jpg)
+
+**[Showcase page](docs/index.html)** · Long-term memory layer for AI agents and assistants. Recollect turns conversations into durable facts, scopes them per user/agent/session, and retrieves the right context with semantic + keyword + entity signals.
 
 ## Why
 
@@ -13,6 +15,15 @@ Stateful agents need memory that survives a single context window: preferences, 
 - **Hybrid retrieval** — embedding similarity, BM25-style keyword scoring, entity overlap boost
 - **Local-first storage** — SQLite under `~/.recollect` (configurable)
 - **Pluggable embedders** — OpenAI embeddings or deterministic local vectors for dev/tests
+
+## Showcase site
+
+Open [`docs/index.html`](docs/index.html) in a browser, or serve locally:
+
+```bash
+cd docs && python -m http.server 8080
+# http://localhost:8080
+```
 
 ## Install
 
