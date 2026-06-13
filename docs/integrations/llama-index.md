@@ -34,4 +34,14 @@ Use with `SimpleChatEngine`, `FunctionAgent`, or `ReActAgent` by passing `memory
 
 ## LlamaHub
 
-List as **llama-index-memory-recollect** on [LlamaHub](https://llamahub.ai) once published to PyPI.
+Upstream PR (LlamaIndex monorepo + `[tool.llamahub]` metadata):
+
+https://github.com/run-llama/llama_index/pull/21954
+
+After merge and PyPI publish:
+
+```bash
+pip install llama-index-memory-recollect recollect-ai
+```
+
+See [LLAMAHUB.md](../../LLAMAHUB.md).
