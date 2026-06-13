@@ -2,7 +2,10 @@
 
 ![Recollect header — memory, books, and time](docs/assets/header.jpg)
 
-**[Home](docs/index.html)** · **[Interactive Showcase](docs/showcase.html)** · **[LangChain](docs/integrations/langchain.md)** · **[LlamaIndex](docs/integrations/llama-index.md)**
+**🌐 [Live Demo](https://cobusgreyling.github.io/recollect/)** · **[Interactive Showcase](https://cobusgreyling.github.io/recollect/showcase.html)** · **[LangChain](docs/integrations/langchain.md)** · **[LlamaIndex](docs/integrations/llama-index.md)**
+
+> **The showcase on this page is raw code.**  
+> For the real interactive presentation (add memories, hybrid search, chat simulation), go to the **live site** above.
 
 Long-term **memory layer** for AI agents and assistants—self-hosted, library-first, and integration-ready for **LangChain** and **LlamaIndex** OSS workflows.
 
@@ -110,19 +113,20 @@ make demo
 - [ ] LlamaHub listing + upstream LlamaIndex notebook PR
 - [ ] LangGraph cookbook in docs site
 
-## GitHub Pages Demo
+## 🌐 Live Interactive Showcase (recommended)
 
-The `docs/` folder contains a fully interactive showcase (no backend) that runs the same hybrid retrieval and scoping logic live in the browser:
+The best way to experience Recollect is the **fully interactive browser demo**:
 
-- Add memories with any combination of `user_id` / `agent_id` / `run_id`
-- Real-time hybrid search (semantic + keyword + entity signals, using the same local hashing embedder approach)
-- Full chat simulation: retrieve context, simulated reply, write the exchange back to memory
+→ **https://cobusgreyling.github.io/recollect/showcase.html**
 
-Once you enable GitHub Pages for this repository (Settings → Pages → Source: **Deploy from a branch** → `main` / `docs`), the demo will be live at:
+It includes:
+- Live **add memory** form with full scoping (`user_id`, `agent_id`, `run_id`)
+- **Hybrid search lab** that shows semantic + keyword + entity scores (mirrors the Python implementation)
+- **Chat simulation** — retrieve memories, get a simulated reply, and write the exchange back
 
-```
-https://<yourname>.github.io/recollect/showcase.html
-```
+Everything runs 100% in your browser using the same local-embedder + hybrid retrieval logic as the library. Data stays in your `localStorage`.
+
+(The links to `docs/showcase.html` and `docs/index.html` in this README point at the **source code** on GitHub, which is why it looks like “just code”. The real presentation is at the link above.)
 
 ## Acknowledgments
 
