@@ -3,12 +3,15 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  publish:
+  publish-recollect-ai:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,6 +19,39 @@ jobs:
           python-version: "3.12"
       - run: pip install build twine
       - run: python -m build
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish (trusted publishing)
+        id: oidc_publish
+        continue-on-error: true
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+      - name: Publish (API token fallback)
+        if: steps.oidc_publish.outcome == 'failure' && secrets.PYPI_API_TOKEN != ''
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
+
+  publish-llama-index-memory-recollect:
+    needs: publish-recollect-ai
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build twine
+      - run: python -m build
+        working-directory: packages/llama-index-memory-recollect
+      - name: Publish (trusted publishing)
+        id: oidc_publish
+        continue-on-error: true
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/llama-index-memory-recollect/dist/
+      - name: Publish (API token fallback)
+        if: steps.oidc_publish.outcome == 'failure' && secrets.PYPI_API_TOKEN != ''
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload packages/llama-index-memory-recollect/dist/*
