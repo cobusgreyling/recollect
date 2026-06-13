@@ -17,13 +17,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install build twine
+      - run: pip install build
       - run: python -m build
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/*
+      - name: Publish to PyPI (Trusted Publishing / OIDC preferred)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          # If OIDC/Trusted Publisher is not configured on PyPI for this repo,
+          # provide a fallback token secret (create at https://pypi.org/manage/account/token/)
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   publish-llama-index-memory-recollect:
     needs: publish-recollect-ai
@@ -33,11 +35,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install build twine
+      - run: pip install build
       - run: python -m build
         working-directory: packages/llama-index-memory-recollect
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload packages/llama-index-memory-recollect/dist/*
+      - name: Publish to PyPI (Trusted Publishing / OIDC preferred)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/llama-index-memory-recollect/dist/
+          password: ${{ secrets.PYPI_API_TOKEN }}
